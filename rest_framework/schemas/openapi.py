@@ -508,6 +508,12 @@ class AutoSchema(ViewInspector):
 
     def map_serializer(self, serializer):
         # Assuming we have a valid serializer instance.
+
+        try:
+            return serializer.get_object_openapi_schema(autoschema=self)
+        except AttributeError:
+            pass
+
         required = []
         properties = {}
 
