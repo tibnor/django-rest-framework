@@ -51,6 +51,10 @@ class TestFieldMapping(TestCase):
         uuid1 = uuid.uuid4()
         uuid2 = uuid.uuid4()
         inspector = AutoSchema()
+
+        class NestedSerializer(serializers.Serializer):
+            data = serializers.ListSerializer(child=serializers.FloatField())
+
         cases = [
             (serializers.ListField(), {'items': {}, 'type': 'array'}),
             (serializers.ListField(child=serializers.BooleanField()), {'items': {'type': 'boolean'}, 'type': 'array'}),
@@ -80,6 +84,11 @@ class TestFieldMapping(TestCase):
                 {'items': {'enum': [1, 2, 3], 'type': 'integer'}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
              {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
+            (NestedSerializer(),
+             {'properties': {'data': {'items': {'type': 'number'}, 'type': 'array'}},
+              'required': ['data'],
+              'type': 'object'}
+             )
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
